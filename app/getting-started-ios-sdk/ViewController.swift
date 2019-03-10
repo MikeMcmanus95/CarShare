@@ -35,7 +35,7 @@ class ViewController: UIViewController {
         )
         
         // display a button
-        let button = UIButton(frame: CGRect(x: 150, y: 400, width: 250, height: 50))
+        let button = UIButton(frame: CGRect(x: 55, y: 400, width: 250, height: 50))
         button.addTarget(self, action: #selector(self.connectPressed(_:)), for: .touchUpInside)
         button.setTitle("Connect your vehicle", for: .normal)
         self.view.addSubview(button)
