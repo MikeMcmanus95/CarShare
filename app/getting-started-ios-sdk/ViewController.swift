@@ -35,9 +35,14 @@ class ViewController: UIViewController {
         )
         
         // display a button
-        let button = UIButton(frame: CGRect(x: 55, y: 400, width: 250, height: 50))
+        let button = UIButton(frame: CGRect(x: 55, y: 300, width: 250, height: 50))
         button.addTarget(self, action: #selector(self.connectPressed(_:)), for: .touchUpInside)
-        button.setTitle("Login", for: .normal)
+        button.setTitle("Unlock Vehicle", for: .normal)
+        button.backgroundColor = .darkGray
+        button.alpha = 0.9
+        button.layer.cornerRadius = 5
+        button.layer.borderWidth = 1
+        button.layer.borderColor = UIColor.black.cgColor
         self.view.addSubview(button)
         
         
@@ -67,7 +72,6 @@ class ViewController: UIViewController {
         
         // TODO: Request Step 2: Get vehicle information
         Alamofire.request("\(Constants.appServer)/vehicle", method: .get).responseJSON { response in
-            print(response.result.value!)
             
             if let result = response.result.value {
                 let JSON = result as! NSDictionary
@@ -80,6 +84,7 @@ class ViewController: UIViewController {
                 self.vehicleText = vehicle
                 
                 self.performSegue(withIdentifier: "displayVehicleInfo", sender: self)
+                //print(response.result.value!)
             }
         }
         
