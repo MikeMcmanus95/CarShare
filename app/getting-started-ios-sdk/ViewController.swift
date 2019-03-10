@@ -5,28 +5,28 @@
 //  Created by Smartcar on 11/19/18.
 //  Copyright © 2018 Smartcar. All rights reserved.
 //
-
 import Alamofire
 import UIKit
 import SmartcarAuth
 
 class ViewController: UIViewController {
     
+    @IBOutlet weak var webViewBG: UIWebView!
+    
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var vehicleText = ""
     
-    @IBOutlet weak var webViewGB: UIWebView!
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
         
         let htmlPath = Bundle.main.path(forResource: "WebViewContent", ofType: "html")
         let htmlURL = URL(fileURLWithPath: htmlPath!)
         let html = try? Data(contentsOf: htmlURL)
         
         self.webViewBG.load(html!, mimeType: "text/html", textEncodingName: "UTF-8", baseURL: htmlURL.deletingLastPathComponent())
+        // Do any additional setup after loading the view, typically from a nib.
         
+        // TODO: Authorization Step 1: Initialize the Smartcar object
         appDelegate.smartcar = SmartcarAuth(
             clientId: Constants.clientId,
             redirectUri: "sc\(Constants.clientId)://exchange",
@@ -35,13 +35,14 @@ class ViewController: UIViewController {
         )
         
         // display a button
-        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 250, height: 50))
+        let button = UIButton(frame: CGRect(x: 150, y: 400, width: 250, height: 50))
         button.addTarget(self, action: #selector(self.connectPressed(_:)), for: .touchUpInside)
         button.setTitle("Connect your vehicle", for: .normal)
-        button.backgroundColor = UIColor.black
         self.view.addSubview(button)
+        
+        
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -50,28 +51,35 @@ class ViewController: UIViewController {
     @IBAction func connectPressed(_ sender: UIButton) {
         let smartcar = appDelegate.smartcar!
         smartcar.launchAuthFlow(viewController: self)
+        
     }
     
     func completion(err: Error?, code: String?, state: String?) -> Any {
-        // send request to exchange auth code for access token
-        Alamofire.request("\(Constants.appServer)/exchange?code=\(code!)", method: .get).responseJSON {_ in
+        // TODO: Authorization Step 3b: Receive an authorization code
+        print("----CODE----")
+        print(code!);
+        print("----CODE----")
+        
+        // TODO: Request Step 1: Obtain an access token
+        
+        Alamofire.request("\(Constants.appServer)/exchange?code=\(code!)", method: .get)
+            .responseJSON {_ in}
+        
+        // TODO: Request Step 2: Get vehicle information
+        Alamofire.request("\(Constants.appServer)/vehicle", method: .get).responseJSON { response in
+            print(response.result.value!)
             
-            // send request to retrieve the vehicle info
-            Alamofire.request("\(Constants.appServer)/vehicle", method: .get).responseJSON { response in
-                print(response.result.value!)
+            if let result = response.result.value {
+                let JSON = result as! NSDictionary
                 
-                if let result = response.result.value {
-                    let JSON = result as! NSDictionary
-                    
-                    let make = JSON.object(forKey: "make")!  as! String
-                    let model = JSON.object(forKey: "model")!  as! String
-                    let year = String(JSON.object(forKey: "year")!  as! Int)
-                    
-                    let vehicle = "\(year) \(make) \(model)"
-                    self.vehicleText = vehicle
-                    
-                    self.performSegue(withIdentifier: "displayVehicleInfo", sender: self)
-                }
+                let make = JSON.object(forKey: "make")!  as! String
+                let model = JSON.object(forKey: "model")!  as! String
+                let year = String(JSON.object(forKey: "year")!  as! Int)
+                
+                let vehicle = "\(year) \(make) \(model)"
+                self.vehicleText = vehicle
+                
+                self.performSegue(withIdentifier: "displayVehicleInfo", sender: self)
             }
         }
         
@@ -83,6 +91,5 @@ class ViewController: UIViewController {
             destinationVC.text = self.vehicleText
         }
     }
-
+    
 }
-

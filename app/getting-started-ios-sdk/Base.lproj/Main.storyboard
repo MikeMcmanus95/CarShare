@@ -28,7 +28,7 @@
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <connections>
-                        <outlet property="webViewGB" destination="lqk-Rv-6Ag" id="YTT-hS-DW8"/>
+                        <outlet property="webViewBG" destination="lqk-Rv-6Ag" id="ONx-Nl-CX8"/>
                         <segue destination="2Zs-vg-EiM" kind="show" identifier="displayVehicleInfo" id="5Xs-fR-mEU"/>
                     </connections>
                 </viewController>
